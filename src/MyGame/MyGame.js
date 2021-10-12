@@ -234,7 +234,7 @@ MyGame.prototype.update = function () {
         this.mBulletset.update();
         
         //BOSS
-        if((this.timer % 2) === 0){
+        if((this.timer % 10) === 0){
             var aBoss = new TextureObject (this.bossSprite, 100, 30, 20, 20);
             this.mBossset.addToSet(aBoss);
             gEngine.AudioClips.playACue(this.boss);
