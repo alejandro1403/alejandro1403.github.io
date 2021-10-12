@@ -48,6 +48,7 @@ function MyGame() {
     this.lifes = null;
     this.timer = null;
     this.seconds = null;
+    this.aux = null;
     
     this.gameOver = null;
     this.goMsg = null;
@@ -140,6 +141,7 @@ MyGame.prototype.initialize = function () {
     //Timer
     this.seconds = 0;
     this.timer = 0;
+    this.aux = 2;
     
     // Step E: Create and initialize message output   
     this.mMsg = new FontRenderable("0");
@@ -207,10 +209,16 @@ MyGame.prototype.update = function () {
 
         //Enemys
         this.mMinionset.update();
-        if((this.timer % 2) === 0){
-            var randomY = Math.random() * 70;
-            var aMinion = new Minion(this.kMinionSprite, randomY, this.timer + 10);
-            this.mMinionset.addToSet(aMinion);
+        if(this.timer > 10){
+            this.aux = 1
+        }
+
+        if((this.timer % this.aux) === 0){
+            for(let i = 0;i<3;i++){
+                var randomY = Math.random() * 70;
+                var aMinion = new Minion(this.kMinionSprite, randomY, this.timer + 10);
+                this.mMinionset.addToSet(aMinion);
+            }
         }
         //Lifes
         this.mVidaset.update();
@@ -226,19 +234,21 @@ MyGame.prototype.update = function () {
         this.mBulletset.update();
         
         //BOSS
-        if((this.timer % 50) === 0){
+        if((this.timer % 40) === 0){
             var aBoss = new TextureObject (this.bossSprite, 100, 30, 20, 20);
             this.mBossset.addToSet(aBoss);
             gEngine.AudioClips.playACue(this.boss);
         }
         this.mBossset.update();
         //BOSS Bullets
-        if(this.mBossset.size() > 0 && (this.timer % 3) == 0){
+        if(this.mBossset.size() > 0 && (this.timer % 2) == 0){
             for(let i = 0;i<this.mBossset.size();i++){
             var xBoss = parseInt(this.mBossset.getObjectAt(i).getXform().getPosition().slice(0,1));
             var yBoss = parseInt(this.mBossset.getObjectAt(i).getXform().getPosition().slice(1,2));
             var aBossBullet = new Bossbrain (this.kMinionSprite, xBoss - 10, yBoss - 5);
+            var aBossBullet2 = new Bossbrain (this.kMinionSprite, xBoss - 10, yBoss + 5);
             this.mBossBulletset.addToSet(aBossBullet);
+            this.mBossBulletset.addToSet(aBossBullet2);
             gEngine.AudioClips.playACue(this.shot);
             }
         }
@@ -283,7 +293,7 @@ MyGame.prototype.update = function () {
                         bBbox.setLife();
                     }                    
                     this.mBulletset.deleteFromSet(j);
-                }                
+                }
             }
             // BulletsBoss -> Hero
             for(let i =0;i<this.mBossBulletset.size();i++){
@@ -304,7 +314,6 @@ MyGame.prototype.update = function () {
                 }                
             } 
         }   
-        
         if(this.lifes < -1){
             this.gameOver = true;
         }
